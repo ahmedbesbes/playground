@@ -7,6 +7,12 @@ name = "pypi"
 scikit-learn = "*"
 pandas = "*"
 streamlit = "*"
+jupyter = "*"
+matplotlib = "*"
+black = "*"
+altair = "*"
+vega-datasets = "*"
+mlxtend = "*"
 
 [dev-packages]
 
