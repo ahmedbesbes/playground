@@ -13,6 +13,8 @@ black = "*"
 altair = "*"
 vega-datasets = "*"
 mlxtend = "*"
+plotly = "*"
+plotly-express = "*"
 
 [dev-packages]
 
