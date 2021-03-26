@@ -1,4 +1,4 @@
-from utils.ui import dataset_selector, model_selector
+from utils.ui import dataset_selector, generate_dataset, model_selector
 from models.LogisticRegression import lr_code_snippet, lr_param_selector
 import numpy as np
 import pandas as pd
@@ -20,7 +20,9 @@ st.info(
 
 col1, col2 = st.beta_columns((1, 1))
 
-x, y, dataset = dataset_selector()
+dataset, n_samples, noise = dataset_selector()
+
+x, y, dataset = generate_dataset(dataset, n_samples, noise)
 
 with col1:
     plot_placeholder = st.empty()

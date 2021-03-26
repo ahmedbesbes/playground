@@ -21,15 +21,17 @@ def dataset_selector():
 
         noise = st.slider("Set the noise", min_value=0.01, max_value=0.2, step=0.005)
 
-        if dataset == "moons":
-            x, y = make_moons(n_samples=n_samples, noise=noise)
-        elif dataset == "circles":
-            x, y = make_circles(n_samples=n_samples, noise=noise)
-        elif dataset == "blobs":
-            x, y = make_blobs(
-                n_samples=n_samples, centers=2, cluster_std=noise * 47 + 0.57
-            )
+    return dataset, n_samples, noise
 
+
+@st.cache(suppress_st_warning=True, allow_output_mutation=True, show_spinner=True)
+def generate_dataset(dataset, n_samples, noise):
+    if dataset == "moons":
+        x, y = make_moons(n_samples=n_samples, noise=noise)
+    elif dataset == "circles":
+        x, y = make_circles(n_samples=n_samples, noise=noise)
+    elif dataset == "blobs":
+        x, y = make_blobs(n_samples=n_samples, centers=2, cluster_std=noise * 47 + 0.57)
     return x, y, dataset
 
 
