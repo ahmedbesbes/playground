@@ -1,3 +1,4 @@
+from models.NeuralNetwork import nn_code_snippet, nn_param_selector
 from models.RandomForet import rf_code_snippet, rf_param_selector
 from models.DecisionTree import dt_code_snippet, dt_param_selector
 from models.LogisticRegression import lr_code_snippet, lr_param_selector
@@ -37,7 +38,7 @@ def model_selector():
     with model_training_container:
         model_type = st.selectbox(
             "Choose a model",
-            ("Logistic Regression", "Decision Tree", "Random Forest", "SVM"),
+            ("Logistic Regression", "Decision Tree", "Random Forest", "Neural Network"),
         )
 
         if model_type == "Logistic Regression":
@@ -49,6 +50,9 @@ def model_selector():
         elif model_type == "Random Forest":
             model = rf_param_selector()
             snippet = rf_code_snippet()
+        elif model_type == "Neural Network":
+            model = nn_param_selector()
+            snippet = nn_code_snippet()
 
         train_button = st.button("Train model")
 
