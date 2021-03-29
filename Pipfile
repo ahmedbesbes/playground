@@ -15,6 +15,7 @@ vega-datasets = "*"
 mlxtend = "*"
 plotly = "*"
 plotly-express = "*"
+streamlit-metrics = "*"
 
 [dev-packages]
 

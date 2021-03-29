@@ -16,22 +16,8 @@ def rf_param_selector():
         "max_depth": max_depth,
         "min_samples_split": min_samples_split,
         "max_features": max_features,
+        "n_jobs": -1,
     }
 
     model = RandomForestClassifier(**params)
     return model
-
-
-def rf_code_snippet():
-    return """
-    >>> from sklearn.ensemble import RandomForestClassifier
-    >>> from sklearn.datasets import make_classification
-    >>> X, y = make_classification(n_samples=1000, n_features=4,
-    ...                            n_informative=2, n_redundant=0,
-    ...                            random_state=0, shuffle=False)
-    >>> clf = RandomForestClassifier(max_depth=2, random_state=0)
-    >>> clf.fit(X, y)
-    RandomForestClassifier(...)
-    >>> print(clf.predict([[0, 0, 0, 0]]))
-    [1]
-    """

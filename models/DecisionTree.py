@@ -1,4 +1,3 @@
-from altair.vegalite.v4.schema.core import ValueWithConditionMarkPropFieldDefnumber
 import streamlit as st
 from sklearn.tree import DecisionTreeClassifier
 
@@ -19,19 +18,3 @@ def dt_param_selector():
 
     model = DecisionTreeClassifier(**params)
     return model
-
-
-def dt_code_snippet():
-    return """
-    >>> from sklearn.datasets import load_iris
-    >>> from sklearn.model_selection import cross_val_score
-    >>> from sklearn.tree import DecisionTreeClassifier
-    >>> clf = DecisionTreeClassifier(random_state=0)
-    >>> iris = load_iris()
-    >>> cross_val_score(clf, iris.data, iris.target, cv=10)
-    ...                             
-    ...
-    array([ 1.     ,  0.93...,  0.86...,  0.93...,  0.93...,
-            0.93...,  0.93...,  1.     ,  0.93...,  1.      ])
-    
-    """

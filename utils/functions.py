@@ -1,17 +1,14 @@
-from matplotlib.pyplot import title
+import streamlit as st
 import pandas as pd
 import numpy as np
-import streamlit as st
-import altair as alt
-
-import plotly_express as px
+from sklearn.metrics import accuracy_score, f1_score
 import plotly.graph_objs as go
-from plotly import tools
+import plotly_express as px
 
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
 def plot_data(x, y, dataset):
@@ -22,12 +19,6 @@ def plot_data(x, y, dataset):
     df = pd.DataFrame(x, columns=["x1", "x2"])
     df["class"] = y
     df["class"] = df["class"].map(str)
-
-    # fig = px.scatter(df, x="x1", y="x2", color="class")
-    # fig.update_xaxes(range=[x_min, x_max])
-    # fig.update_xaxes(range=[y_min, y_max])
-
-    # fig.update_layout(height=450)
 
     fig = go.Figure(
         data=[
@@ -52,73 +43,123 @@ def plot_data(x, y, dataset):
     return fig
 
 
-hyperparams = {
-    "Logistic Regression": {
-        "options": {
-            "penalty": ["l1", "l2", "elasticnet", "none"],
-            "C": [1, 0.8, 0.5, 0.1, 0.01],
-            "solver": ["lbfgs"],
-        },
-        "object": LogisticRegression,
-    },
-    "Random Forest": {
-        "options": {
-            "n_estimators": [10, 25, 50, 100, 150, 200, 250, 300],
-            "max_depth": [None, 1, 3, 5, 10],
-            "max_features": ["auto", "sqrt", "log2"],
-        },
-        "object": RandomForestClassifier,
-    },
-    "SVM": {
-        "options": {
-            "C": [1, 5, 10, 15],
-        },
-        "object": SVC,
-    },
-}
+def plot_decision_boundary(model, model_type, x_train, y_train, x_test, y_test):
+    d = x_train.shape[1]
 
-
-def set_model(model_type):
-    options = hyperparams[model_type]["options"]
-    params = {}
-    for param, values in options.items():
-        selected_parameters = st.selectbox(param, values)
-        params[param] = selected_parameters
-
-    model_class = hyperparams[model_type]["object"]
-    model = model_class(**params)
-    return model
-
-
-def plot_decision_boundary(model, model_type, X, y):
-    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
-    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    x_min, x_max = x_train[:, 0].min() - 1, x_train[:, 0].max() + 1
+    y_min, y_max = x_train[:, 1].min() - 1, x_train[:, 1].max() + 1
 
     h = 0.02
 
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
     y_ = np.arange(y_min, y_max, h)
 
-    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+    model_input = [(xx.ravel() ** p, yy.ravel() ** p) for p in range(1, d // 2 + 1)]
+    aux = []
+    for c in model_input:
+        aux.append(c[0])
+        aux.append(c[1])
+
+    print(len(aux))
+
+    # Z = model.predict(np.c_[aux])
+
+    Z = model.predict(np.concatenate([v.reshape(-1, 1) for v in aux], axis=1))
+
     Z = Z.reshape(xx.shape)
 
     fig = go.Figure(
-        data=[go.Heatmap(x=xx[0], y=y_, z=Z, colorscale="oxy", showscale=False)],
+        data=[
+            go.Heatmap(
+                x=xx[0],
+                y=y_,
+                z=Z,
+                # colorscale="oxy",
+                colorscale=["tomato", "rgb(27,158,119)"],
+                showscale=False,
+            )
+        ],
     )
 
-    trace2 = go.Scatter(
-        x=X[:, 0],
-        y=X[:, 1],
+    trace1 = go.Scatter(
+        x=x_train[:, 0],
+        y=x_train[:, 1],
+        name="train data",
         mode="markers",
         showlegend=True,
         marker=dict(
-            size=10, color=y, colorscale="oxy", line=dict(color="white", width=2)
+            size=10,
+            color=y_train,
+            colorscale=["tomato", "green"],
+            line=dict(color="black", width=2),
         ),
     )
 
+    fig.add_trace(trace1)
+
+    trace2 = go.Scatter(
+        x=x_test[:, 0],
+        y=x_test[:, 1],
+        name="test data",
+        mode="markers",
+        showlegend=True,
+        marker_symbol="cross",
+        visible="legendonly",
+        marker=dict(
+            size=10,
+            color=y_test,
+            colorscale=["tomato", "green"],
+            line=dict(color="black", width=2),
+        ),
+    )
     fig.add_trace(trace2)
-    fig.update_layout(height=450, title={"text": f"Decision boundary of {model_type}"})
+
+    fig.update_layout(
+        height=500,
+        title={"text": f"Decision boundary of {model_type}"},
+        # margin=dict(b=20, t=100, r=100),
+    )
     fig.update_xaxes(range=[x_min, x_max], title="x1")
     fig.update_yaxes(range=[y_min, y_max], title="x2")
+
+    return fig
+
+
+def train_model(model, x_train, y_train, x_test, y_test):
+    model.fit(x_train, y_train)
+    y_train_pred = model.predict(x_train)
+    y_test_pred = model.predict(x_test)
+
+    train_accuracy = np.round(accuracy_score(y_train, y_train_pred), 3)
+    train_f1 = np.round(f1_score(y_train, y_train_pred, average="weighted"), 3)
+
+    test_accuracy = np.round(accuracy_score(y_test, y_test_pred), 3)
+    test_f1 = np.round(f1_score(y_test, y_test_pred, average="weighted"), 3)
+
+    df_metrics = pd.DataFrame()
+    df_metrics["dataset"] = ["train", "test"]
+    df_metrics["Accuracy"] = [train_accuracy, test_accuracy]
+    df_metrics["F1 Score"] = [train_f1, test_f1]
+    df_metrics.set_index("dataset", inplace=True)
+
+    return model, train_accuracy, train_f1, test_accuracy, test_f1, df_metrics
+
+
+def display_kpis(train_metric, test_metric, label):
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number+delta",
+            value=test_metric,
+            title={"text": f"{label} (test)"},
+            domain={"x": [0, 1], "y": [0, 1]},
+            gauge={"axis": {"range": [0, 1]}},
+            delta={"reference": train_metric},
+        )
+    )
+    fig.update_layout(
+        # width=400,
+        height=160,
+        margin=dict(l=0, r=0, b=5, t=50, pad=0),
+    )
 
     return fig
