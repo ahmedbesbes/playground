@@ -3,29 +3,34 @@ import streamlit as st
 from sklearn.datasets import make_moons, make_circles, make_blobs
 from sklearn.preprocessing import StandardScaler
 
+from models.NaiveBayes import nb_param_selector
 from models.NeuralNetwork import nn_param_selector
 from models.RandomForet import rf_param_selector
 from models.DecisionTree import dt_param_selector
 from models.LogisticRegression import lr_param_selector
 from models.KNearesNeighbors import knn_param_selector
+from models.SVC import svc_param_selector
+from models.GradientBoosting import gb_param_selector
+
 
 from models.utils import model_imports, model_urls, model_infos
 
 
 def introduction():
-    st.title("Welcome to playground 🧪")
+    st.title("**Welcome to playground 🧪**")
     st.subheader(
         """
         This is a place where you can get familiar with machine learning models directly from your browser
         """
     )
+
     st.markdown(
         """
     - 🗂️ Choose a dataset
     - ⚙️ Pick a model and set its hyper-parameters
     - 📉 Train it and check its performance metrics and decision boundary on train and test data
     - 🩺 Diagnose possible overitting and experiment with other settings
-    --- 
+    -----
     """
     )
 
@@ -107,8 +112,11 @@ def model_selector():
                 "Logistic Regression",
                 "Decision Tree",
                 "Random Forest",
+                "Gradient Boosting",
                 "Neural Network",
                 "K Nearest Neighbors",
+                "Gaussian Naive Bayes",
+                "SVC",
             ),
         )
 
@@ -127,45 +135,33 @@ def model_selector():
         elif model_type == "K Nearest Neighbors":
             model = knn_param_selector()
 
-        # train_button = st.button("Train model")
+        elif model_type == "Gaussian Naive Bayes":
+            model = nb_param_selector()
+
+        elif model_type == "SVC":
+            model = svc_param_selector()
+
+        elif model_type == "Gradient Boosting":
+            model = gb_param_selector()
 
     return model_type, model
 
 
-def show_metrics(accuracy, f1, train=True):
-
-    (c0, c1, c2, _, _, _) = st.beta_columns((2, 3, 3, 3, 3, 3))
-    (c0, c1, c2, c3) = st.beta_columns((1, 2, 2, 5))
-
-    tag = "train" if train else "test"
-
-    info = f"metrics on {tag}"
-
-    with c0:
-        st.warning(info)
-
-    with c1:
-        st.info(f"F1 score : {f1}")
-
-    with c2:
-        st.info(f"Accuracy : {accuracy}")
-
-    with c3:
-        st.markdown(
-            """
-        This is a place where you can get familiar with machine learning models directly from your browser
-        
-        
-        """
-        )
-
-
-def generate_snippet(model, model_type, n_samples, train_noise, test_noise, dataset):
+def generate_snippet(
+    model, model_type, n_samples, train_noise, test_noise, dataset, degree
+):
     train_noise = np.round(train_noise, 3)
     test_noise = np.round(test_noise, 3)
 
     model_text_rep = repr(model)
     model_import = model_imports[model_type]
+
+    if degree > 1:
+        feature_engineering = f"""
+    >>> for d in range(2, {degree+1}):
+    >>>     x_train = np.concatenate((x_train, x_train[:, 0] ** d, x_train[:, 1] ** d))
+    >>>     x_test= np.concatenate((x_test, x_test[:, 0] ** d, x_test[:, 1] ** d))
+    """
 
     if dataset == "moons":
         dataset_import = "from sklearn.datasets import make_moons"
@@ -178,6 +174,7 @@ def generate_snippet(model, model_type, n_samples, train_noise, test_noise, data
         dataset_import = "from sklearn.datasets import make_circles"
         train_data_def = f"x_train, y_train = make_circles(n_samples={n_samples}, noise={train_noise})"
         test_data_def = f"x_test, y_test = make_circles(n_samples={n_samples // 2}, noise={test_noise})"
+
     elif dataset == "blobs":
         dataset_import = "from sklearn.datasets import make_blobs"
         train_data_def = f"x_train, y_train = make_blobs(n_samples={n_samples}, clusters=2, noise={train_noise* 47 + 0.57})"
@@ -187,15 +184,15 @@ def generate_snippet(model, model_type, n_samples, train_noise, test_noise, data
     >>> {dataset_import}
     >>> {model_import}
     >>> from sklearn.metrics import accuracy_score, f1_score
-    >>> 
+
     >>> {train_data_def}
-    >>> {test_data_def}    
+    >>> {test_data_def}
+    {feature_engineering if degree > 1 else ''}    
     >>> model = {model_text_rep}
     >>> model.fit(x_train, y_train)
     
     >>> y_train_pred = model.predict(x_train)
     >>> y_test_pred = model.predict(x_test)
-
     >>> train_accuracy = accuracy_score(y_train, y_train_pred)
     >>> test_accuracy = accuracy_score(y_test, y_test_pred)
     """
@@ -205,7 +202,7 @@ def generate_snippet(model, model_type, n_samples, train_noise, test_noise, data
 
 def documentation(model_type):
     model_url = model_urls[model_type]
-    text = f"** 🔗 Link to scikit-learn official documentation [here]({model_url})**"
+    text = f"**Link to scikit-learn official documentation [here]({model_url}) 💻 **"
     return text
 
 
