@@ -1,9 +1,11 @@
+import time
 import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
+
+from plotly.subplots import make_subplots
 import plotly.graph_objs as go
-import plotly_express as px
 
 
 def local_css(file_name):
@@ -12,7 +14,6 @@ def local_css(file_name):
 
 
 def plot_data(x, y, dataset):
-
     x_min, x_max = x[:, 0].min() - 1, x[:, 0].max() + 1
     y_min, y_max = x[:, 1].min() - 1, x[:, 1].max() + 1
 
@@ -43,7 +44,9 @@ def plot_data(x, y, dataset):
     return fig
 
 
-def plot_decision_boundary(model, model_type, x_train, y_train, x_test, y_test):
+def plot_decision_boundary_and_metrics(
+    model, model_type, x_train, y_train, x_test, y_test, metrics
+):
     d = x_train.shape[1]
 
     x_min, x_max = x_train[:, 0].min() - 1, x_train[:, 0].max() + 1
@@ -60,28 +63,27 @@ def plot_decision_boundary(model, model_type, x_train, y_train, x_test, y_test):
         aux.append(c[0])
         aux.append(c[1])
 
-    print(len(aux))
-
-    # Z = model.predict(np.c_[aux])
-
     Z = model.predict(np.concatenate([v.reshape(-1, 1) for v in aux], axis=1))
 
     Z = Z.reshape(xx.shape)
 
-    fig = go.Figure(
-        data=[
-            go.Heatmap(
-                x=xx[0],
-                y=y_,
-                z=Z,
-                # colorscale="oxy",
-                colorscale=["tomato", "rgb(27,158,119)"],
-                showscale=False,
-            )
-        ],
+    fig = make_subplots(
+        rows=2,
+        cols=2,
+        specs=[[{"colspan": 2}, None], [{"type": "indicator"}, {"type": "indicator"}]],
+        subplot_titles=("Decision Boundary", None, None),
+        row_heights=[0.7, 0.30],
     )
 
-    trace1 = go.Scatter(
+    heatmap = go.Heatmap(
+        x=xx[0],
+        y=y_,
+        z=Z,
+        colorscale=["tomato", "rgb(27,158,119)"],
+        showscale=False,
+    )
+
+    train_data = go.Scatter(
         x=x_train[:, 0],
         y=x_train[:, 1],
         name="train data",
@@ -95,9 +97,7 @@ def plot_decision_boundary(model, model_type, x_train, y_train, x_test, y_test):
         ),
     )
 
-    fig.add_trace(trace1)
-
-    trace2 = go.Scatter(
+    test_data = go.Scatter(
         x=x_test[:, 0],
         y=x_test[:, 1],
         name="test data",
@@ -112,21 +112,102 @@ def plot_decision_boundary(model, model_type, x_train, y_train, x_test, y_test):
             line=dict(color="black", width=2),
         ),
     )
-    fig.add_trace(trace2)
+
+    fig.add_trace(heatmap, row=1, col=1,).add_trace(
+        train_data
+    ).add_trace(test_data)
+
+    fig.add_trace(
+        go.Indicator(
+            mode="gauge+number+delta",
+            value=metrics["test_accuracy"],
+            title={"text": f"Accuracy (test)"},
+            domain={"x": [0, 1], "y": [0, 1]},
+            gauge={"axis": {"range": [0, 1]}},
+            delta={"reference": metrics["train_accuracy"]},
+        ),
+        row=2,
+        col=1,
+    )
+
+    fig.add_trace(
+        go.Indicator(
+            mode="gauge+number+delta",
+            value=metrics["test_f1"],
+            title={"text": f"Accuracy (test)"},
+            domain={"x": [0, 1], "y": [0, 1]},
+            gauge={"axis": {"range": [0, 1]}},
+            delta={"reference": metrics["train_f1"]},
+        ),
+        row=2,
+        col=2,
+    )
 
     fig.update_layout(
-        height=500,
-        title={"text": f"Decision boundary of {model_type}"},
-        # margin=dict(b=20, t=100, r=100),
+        height=700,
     )
-    fig.update_xaxes(range=[x_min, x_max], title="x1")
-    fig.update_yaxes(range=[y_min, y_max], title="x2")
+
+    ####
+
+    # fig = go.Figure(
+    #     data=[
+    #         go.Heatmap(
+    #             x=xx[0],
+    #             y=y_,
+    #             z=Z,
+    #             colorscale=["tomato", "rgb(27,158,119)"],
+    #             showscale=False,
+    #         )
+    #     ],
+    # )
+
+    # trace1 = go.Scatter(
+    #     x=x_train[:, 0],
+    #     y=x_train[:, 1],
+    #     name="train data",
+    #     mode="markers",
+    #     showlegend=True,
+    #     marker=dict(
+    #         size=10,
+    #         color=y_train,
+    #         colorscale=["tomato", "green"],
+    #         line=dict(color="black", width=2),
+    #     ),
+    # )
+
+    # fig.add_trace(trace1)
+
+    # trace2 = go.Scatter(
+    #     x=x_test[:, 0],
+    #     y=x_test[:, 1],
+    #     name="test data",
+    #     mode="markers",
+    #     showlegend=True,
+    #     marker_symbol="cross",
+    #     visible="legendonly",
+    #     marker=dict(
+    #         size=10,
+    #         color=y_test,
+    #         colorscale=["tomato", "green"],
+    #         line=dict(color="black", width=2),
+    #     ),
+    # )
+    # fig.add_trace(trace2)
+
+    # fig.update_layout(
+    #     height=500,
+    #     title={"text": f"Decision boundary of {model_type}"},
+    # )
+    # fig.update_xaxes(range=[x_min, x_max], title="x1")
+    # fig.update_yaxes(range=[y_min, y_max], title="x2")
 
     return fig
 
 
 def train_model(model, x_train, y_train, x_test, y_test):
+    t0 = time.time()
     model.fit(x_train, y_train)
+    duration = time.time() - t0
     y_train_pred = model.predict(x_train)
     y_test_pred = model.predict(x_test)
 
@@ -136,13 +217,7 @@ def train_model(model, x_train, y_train, x_test, y_test):
     test_accuracy = np.round(accuracy_score(y_test, y_test_pred), 3)
     test_f1 = np.round(f1_score(y_test, y_test_pred, average="weighted"), 3)
 
-    df_metrics = pd.DataFrame()
-    df_metrics["dataset"] = ["train", "test"]
-    df_metrics["Accuracy"] = [train_accuracy, test_accuracy]
-    df_metrics["F1 Score"] = [train_f1, test_f1]
-    df_metrics.set_index("dataset", inplace=True)
-
-    return model, train_accuracy, train_f1, test_accuracy, test_f1, df_metrics
+    return model, train_accuracy, train_f1, test_accuracy, test_f1, duration
 
 
 def display_kpis(train_metric, test_metric, label):
@@ -157,7 +232,6 @@ def display_kpis(train_metric, test_metric, label):
         )
     )
     fig.update_layout(
-        # width=400,
         height=160,
         margin=dict(l=0, r=0, b=5, t=50, pad=0),
     )
