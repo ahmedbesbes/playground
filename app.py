@@ -1,7 +1,7 @@
 import numpy as np
 import streamlit as st
 from utils.functions import (
-    display_kpis,
+    img_to_bytes,
     local_css,
     plot_data,
     plot_decision_boundary_and_metrics,
@@ -27,6 +27,7 @@ local_css("./css/style.css")
 introduction()
 
 col1, col2 = st.beta_columns((1, 1))
+
 
 dataset, n_samples, train_noise, test_noise, n_classes = dataset_selector()
 
@@ -122,3 +123,14 @@ fig = plot_decision_boundary_and_metrics(
 )
 
 plot_placeholder.plotly_chart(fig, True)
+
+
+st.sidebar.markdown("---")
+
+st.sidebar.markdown(
+    """
+    [<img src='data:image/png;base64,{}' class='img-fluid' width=25 height=25>](https://github.com/ahmedbesbes/playground) <small> Playground 0.1.0 | April 2021</small>""".format(
+        img_to_bytes("./images/github.png")
+    ),
+    unsafe_allow_html=True,
+)
