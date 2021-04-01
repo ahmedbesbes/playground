@@ -16,6 +16,7 @@ mlxtend = "*"
 plotly = "*"
 plotly-express = "*"
 streamlit-metrics = "*"
+pipreqs = "*"
 
 [dev-packages]
 
