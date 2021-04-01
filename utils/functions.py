@@ -1,3 +1,5 @@
+from pathlib import Path
+import base64
 import time
 import streamlit as st
 import pandas as pd
@@ -237,3 +239,9 @@ def display_kpis(train_metric, test_metric, label):
     )
 
     return fig
+
+
+def img_to_bytes(img_path):
+    img_bytes = Path(img_path).read_bytes()
+    encoded = base64.b64encode(img_bytes).decode()
+    return encoded
