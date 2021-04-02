@@ -21,7 +21,7 @@ from utils.ui import (
 
 
 st.set_page_config(layout="wide")
-local_css("./css/style.css")
+# local_css("./css/style.css")
 
 
 introduction()
