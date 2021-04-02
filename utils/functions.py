@@ -136,7 +136,7 @@ def plot_decision_boundary_and_metrics(
         go.Indicator(
             mode="gauge+number+delta",
             value=metrics["test_f1"],
-            title={"text": f"Accuracy (test)"},
+            title={"text": f"F1 score (test)"},
             domain={"x": [0, 1], "y": [0, 1]},
             gauge={"axis": {"range": [0, 1]}},
             delta={"reference": metrics["train_f1"]},
