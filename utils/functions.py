@@ -156,60 +156,6 @@ def plot_decision_boundary_and_metrics(
         height=700,
     )
 
-    ####
-
-    # fig = go.Figure(
-    #     data=[
-    #         go.Heatmap(
-    #             x=xx[0],
-    #             y=y_,
-    #             z=Z,
-    #             colorscale=["tomato", "rgb(27,158,119)"],
-    #             showscale=False,
-    #         )
-    #     ],
-    # )
-
-    # trace1 = go.Scatter(
-    #     x=x_train[:, 0],
-    #     y=x_train[:, 1],
-    #     name="train data",
-    #     mode="markers",
-    #     showlegend=True,
-    #     marker=dict(
-    #         size=10,
-    #         color=y_train,
-    #         colorscale=["tomato", "green"],
-    #         line=dict(color="black", width=2),
-    #     ),
-    # )
-
-    # fig.add_trace(trace1)
-
-    # trace2 = go.Scatter(
-    #     x=x_test[:, 0],
-    #     y=x_test[:, 1],
-    #     name="test data",
-    #     mode="markers",
-    #     showlegend=True,
-    #     marker_symbol="cross",
-    #     visible="legendonly",
-    #     marker=dict(
-    #         size=10,
-    #         color=y_test,
-    #         colorscale=["tomato", "green"],
-    #         line=dict(color="black", width=2),
-    #     ),
-    # )
-    # fig.add_trace(trace2)
-
-    # fig.update_layout(
-    #     height=500,
-    #     title={"text": f"Decision boundary of {model_type}"},
-    # )
-    # fig.update_xaxes(range=[x_min, x_max], title="x1")
-    # fig.update_yaxes(range=[y_min, y_max], title="x2")
-
     return fig
 
 
@@ -227,25 +173,6 @@ def train_model(model, x_train, y_train, x_test, y_test):
     test_f1 = np.round(f1_score(y_test, y_test_pred, average="weighted"), 3)
 
     return model, train_accuracy, train_f1, test_accuracy, test_f1, duration
-
-
-def display_kpis(train_metric, test_metric, label):
-    fig = go.Figure(
-        go.Indicator(
-            mode="gauge+number+delta",
-            value=test_metric,
-            title={"text": f"{label} (test)"},
-            domain={"x": [0, 1], "y": [0, 1]},
-            gauge={"axis": {"range": [0, 1]}},
-            delta={"reference": train_metric},
-        )
-    )
-    fig.update_layout(
-        height=160,
-        margin=dict(l=0, r=0, b=5, t=50, pad=0),
-    )
-
-    return fig
 
 
 def img_to_bytes(img_path):
