@@ -5,9 +5,13 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
+from sklearn.datasets import make_moons, make_circles, make_blobs
+from sklearn.preprocessing import StandardScaler
 
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
+
+from models.utils import model_infos, model_urls
 
 
 def local_css(file_name):
@@ -15,35 +19,36 @@ def local_css(file_name):
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
-def plot_data(x, y, dataset):
-    x_min, x_max = x[:, 0].min() - 1, x[:, 0].max() + 1
-    y_min, y_max = x[:, 1].min() - 1, x[:, 1].max() + 1
+@st.cache(suppress_st_warning=True, allow_output_mutation=True, show_spinner=True)
+def generate_data(dataset, n_samples, train_noise, test_noise, n_classes):
+    if dataset == "moons":
+        x_train, y_train = make_moons(n_samples=n_samples, noise=train_noise)
+        x_test, y_test = make_moons(n_samples=n_samples, noise=test_noise)
+    elif dataset == "circles":
+        x_train, y_train = make_circles(n_samples=n_samples, noise=train_noise)
+        x_test, y_test = make_circles(n_samples=n_samples, noise=test_noise)
+    elif dataset == "blobs":
+        x_train, y_train = make_blobs(
+            n_features=2,
+            n_samples=n_samples,
+            centers=n_classes,
+            cluster_std=train_noise * 47 + 0.57,
+            random_state=42,
+        )
+        x_test, y_test = make_blobs(
+            n_features=2,
+            n_samples=n_samples // 2,
+            centers=2,
+            cluster_std=test_noise * 47 + 0.57,
+            random_state=42,
+        )
 
-    df = pd.DataFrame(x, columns=["x1", "x2"])
-    df["class"] = y
-    df["class"] = df["class"].map(str)
+        scaler = StandardScaler()
+        x_train = scaler.fit_transform(x_train)
 
-    fig = go.Figure(
-        data=[
-            go.Scatter(
-                x=x[:, 0],
-                y=x[:, 1],
-                mode="markers",
-                showlegend=False,
-                marker=dict(
-                    size=10,
-                    color=y,
-                    colorscale="oxy",
-                    line=dict(color="white", width=2),
-                ),
-            )
-        ]
-    )
-    fig.update_layout(title={"text": f"{dataset} dataset"})
-    fig.update_xaxes(range=[x_min, x_max], title="x1")
-    fig.update_yaxes(range=[y_min, y_max], title="x2")
+        x_test = scaler.transform(x_test)
 
-    return fig
+    return x_train, y_train, x_test, y_test
 
 
 def plot_decision_boundary_and_metrics(
@@ -247,3 +252,35 @@ def img_to_bytes(img_path):
     img_bytes = Path(img_path).read_bytes()
     encoded = base64.b64encode(img_bytes).decode()
     return encoded
+
+
+def get_model_tips(model_type):
+    model_tips = model_infos[model_type]
+    return model_tips
+
+
+def get_model_url(model_type):
+    model_url = model_urls[model_type]
+    text = f"**Link to scikit-learn official documentation [here]({model_url}) 💻 **"
+    return text
+
+
+def add_polynomial_features(x_train, x_test, degree):
+    for d in range(2, degree + 1):
+        x_train = np.concatenate(
+            (
+                x_train,
+                x_train[:, 0].reshape(-1, 1) ** d,
+                x_train[:, 1].reshape(-1, 1) ** d,
+            ),
+            axis=1,
+        )
+        x_test = np.concatenate(
+            (
+                x_test,
+                x_test[:, 0].reshape(-1, 1) ** d,
+                x_test[:, 1].reshape(-1, 1) ** d,
+            ),
+            axis=1,
+        )
+    return x_train, x_test

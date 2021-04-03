@@ -1,136 +1,130 @@
 import numpy as np
 import streamlit as st
 from utils.functions import (
-    img_to_bytes,
-    local_css,
-    plot_data,
+    add_polynomial_features,
+    generate_data,
+    get_model_tips,
+    get_model_url,
     plot_decision_boundary_and_metrics,
     train_model,
 )
 
 from utils.ui import (
     dataset_selector,
-    documentation,
+    footer,
     generate_snippet,
-    generate_data,
-    get_max_polynomial_degree,
-    info,
+    polynomial_degree_selector,
     introduction,
     model_selector,
 )
 
-
 st.set_page_config(layout="wide")
-# local_css("./css/style.css")
 
 
-introduction()
-
-col1, col2 = st.beta_columns((1, 1))
-
-
-dataset, n_samples, train_noise, test_noise, n_classes = dataset_selector()
-
-x_train, y_train, x_test, y_test = generate_data(
-    dataset, n_samples, train_noise, test_noise, n_classes
-)
-
-
-with col1:
-    plot_placeholder = st.empty()
-
-with col2:
-    execution_time = st.empty()
-    doc_placeholder = st.empty()
-    code_header = st.empty()
-    code_placeholder = st.empty()
-    info_placeholder = st.empty()
-    tips_header = st.empty()
-    tips = st.empty()
-
-
-fig_data = plot_data(x_train, y_train, dataset)
-
-plot_placeholder.plotly_chart(fig_data, use_container_width=True)
-
-
-model_type, model = model_selector()
-
-
-st.sidebar.header("Feature engineering")
-degree = get_max_polynomial_degree()
-
-for d in range(2, degree + 1):
-    x_train = np.concatenate(
-        (x_train, x_train[:, 0].reshape(-1, 1) ** d, x_train[:, 1].reshape(-1, 1) ** d),
-        axis=1,
+def sidebar_controllers():
+    dataset, n_samples, train_noise, test_noise, n_classes = dataset_selector()
+    model_type, model = model_selector()
+    x_train, y_train, x_test, y_test = generate_data(
+        dataset, n_samples, train_noise, test_noise, n_classes
     )
-    x_test = np.concatenate(
-        (x_test, x_test[:, 0].reshape(-1, 1) ** d, x_test[:, 1].reshape(-1, 1) ** d),
-        axis=1,
+    st.sidebar.header("Feature engineering")
+    degree = polynomial_degree_selector()
+    footer()
+
+    return (
+        dataset,
+        n_classes,
+        model_type,
+        model,
+        x_train,
+        y_train,
+        x_test,
+        y_test,
+        degree,
+        train_noise,
+        test_noise,
+        n_samples,
     )
 
 
-doc_text = documentation(model_type)
-doc_placeholder.markdown(doc_text)
+def body(
+    x_train, x_test, y_train, y_test, degree, model, model_type, train_noise, test_noise
+):
+    introduction()
+    col1, col2 = st.beta_columns((1, 1))
+
+    with col1:
+        plot_placeholder = st.empty()
+
+    with col2:
+        duration_placeholder = st.empty()
+        model_url_placeholder = st.empty()
+        code_header_placeholder = st.empty()
+        snippet_placeholder = st.empty()
+        tips_header_placeholder = st.empty()
+        tips_placeholder = st.empty()
+
+    x_train, x_test = add_polynomial_features(x_train, x_test, degree)
+    model_url = get_model_url(model_type)
+
+    (
+        model,
+        train_accuracy,
+        train_f1,
+        test_accuracy,
+        test_f1,
+        duration,
+    ) = train_model(model, x_train, y_train, x_test, y_test)
+
+    metrics = {
+        "train_accuracy": train_accuracy,
+        "train_f1": train_f1,
+        "test_accuracy": test_accuracy,
+        "test_f1": test_f1,
+    }
+
+    snippet = generate_snippet(
+        model, model_type, n_samples, train_noise, test_noise, dataset, degree
+    )
+
+    model_tips = get_model_tips(model_type)
+
+    fig = plot_decision_boundary_and_metrics(
+        model, x_train, y_train, x_test, y_test, metrics
+    )
+
+    plot_placeholder.plotly_chart(fig, True)
+    duration_placeholder.warning(f"Training took {duration:.3f} seconds")
+    model_url_placeholder.markdown(model_url)
+    code_header_placeholder.header("**Retrain the same model in Python**")
+    snippet_placeholder.code(snippet)
+    tips_header_placeholder.header(f"**Tips on the {model_type} 💡 **")
+    tips_placeholder.info(model_tips)
 
 
-(
-    model,
-    train_accuracy,
-    train_f1,
-    test_accuracy,
-    test_f1,
-    duration,
-) = train_model(model, x_train, y_train, x_test, y_test)
-
-
-metrics = {
-    "train_accuracy": train_accuracy,
-    "train_f1": train_f1,
-    "test_accuracy": test_accuracy,
-    "test_f1": test_f1,
-}
-
-
-snippet = generate_snippet(
-    model, model_type, n_samples, train_noise, test_noise, dataset, degree
-)
-code_header.header("**Retrain the same model in Python**")
-execution_time.warning(f"Training took {duration:.3f} seconds")
-code_placeholder.code(snippet)
-
-model_info = info(model_type)
-
-col3, col4, col5 = st.beta_columns((1, 1, 2))
-
-
-# with col3:
-#     kpi_plot = display_kpis(train_accuracy, test_accuracy, "Accuracy")
-#     st.plotly_chart(kpi_plot, True)
-
-# with col4:
-#     kpi_plot = display_kpis(train_f1, test_f1, "F1 Score")
-#     st.plotly_chart(kpi_plot, True)
-
-
-tips_header.header(f"**Tips on the {model_type} 💡 **")
-tips.info(model_info)
-
-
-fig = plot_decision_boundary_and_metrics(
-    model, x_train, y_train, x_test, y_test, metrics
-)
-
-plot_placeholder.plotly_chart(fig, True)
-
-
-st.sidebar.markdown("---")
-
-st.sidebar.markdown(
-    """
-    [<img src='data:image/png;base64,{}' class='img-fluid' width=25 height=25>](https://github.com/ahmedbesbes/playground) <small> Playground 0.1.0 | April 2021</small>""".format(
-        img_to_bytes("./images/github.png")
-    ),
-    unsafe_allow_html=True,
-)
+if __name__ == "__main__":
+    (
+        dataset,
+        n_classes,
+        model_type,
+        model,
+        x_train,
+        y_train,
+        x_test,
+        y_test,
+        degree,
+        train_noise,
+        test_noise,
+        n_samples,
+    ) = sidebar_controllers()
+    body(
+        x_train,
+        x_test,
+        y_train,
+        y_test,
+        degree,
+        model,
+        model_type,
+        train_noise,
+        test_noise,
+    )

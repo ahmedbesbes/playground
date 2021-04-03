@@ -1,7 +1,6 @@
 import numpy as np
 import streamlit as st
-from sklearn.datasets import make_moons, make_circles, make_blobs
-from sklearn.preprocessing import StandardScaler
+
 
 from models.NaiveBayes import nb_param_selector
 from models.NeuralNetwork import nn_param_selector
@@ -12,8 +11,8 @@ from models.KNearesNeighbors import knn_param_selector
 from models.SVC import svc_param_selector
 from models.GradientBoosting import gb_param_selector
 
-
-from models.utils import model_imports, model_urls, model_infos
+from models.utils import model_imports
+from utils.functions import img_to_bytes
 
 
 def introduction():
@@ -68,39 +67,6 @@ def dataset_selector():
             n_classes = None
 
     return dataset, n_samples, train_noise, test_noise, n_classes
-
-
-@st.cache(suppress_st_warning=True, allow_output_mutation=True, show_spinner=True)
-def generate_data(dataset, n_samples, train_noise, test_noise, n_classes):
-    if dataset == "moons":
-        x_train, y_train = make_moons(n_samples=n_samples, noise=train_noise)
-        x_test, y_test = make_moons(n_samples=n_samples, noise=test_noise)
-    elif dataset == "circles":
-        x_train, y_train = make_circles(n_samples=n_samples, noise=train_noise)
-        x_test, y_test = make_circles(n_samples=n_samples, noise=test_noise)
-    elif dataset == "blobs":
-        x_train, y_train = make_blobs(
-            n_features=2,
-            n_samples=n_samples,
-            centers=n_classes,
-            cluster_std=train_noise * 47 + 0.57,
-            random_state=42,
-        )
-        x_test, y_test = make_blobs(
-            n_features=2,
-            n_samples=n_samples // 2,
-            centers=2,
-            cluster_std=test_noise * 47 + 0.57,
-            random_state=42,
-        )
-
-        scaler = StandardScaler()
-        x_train = scaler.fit_transform(x_train)
-
-        # scaler = StandardScaler()
-        x_test = scaler.transform(x_test)
-
-    return x_train, y_train, x_test, y_test
 
 
 def model_selector():
@@ -196,20 +162,19 @@ def generate_snippet(
     >>> train_accuracy = accuracy_score(y_train, y_train_pred)
     >>> test_accuracy = accuracy_score(y_test, y_test_pred)
     """
-
     return snippet
 
 
-def documentation(model_type):
-    model_url = model_urls[model_type]
-    text = f"**Link to scikit-learn official documentation [here]({model_url}) 💻 **"
-    return text
-
-
-def info(model_type):
-    model_info = model_infos[model_type]
-    return model_info
-
-
-def get_max_polynomial_degree():
+def polynomial_degree_selector():
     return st.sidebar.number_input("Highest polynomial degree", 1, 10, 1, 1)
+
+
+def footer():
+    st.sidebar.markdown("---")
+    st.sidebar.markdown(
+        """
+        [<img src='data:image/png;base64,{}' class='img-fluid' width=25 height=25>](https://github.com/ahmedbesbes/playground) <small> Playground 0.1.0 | April 2021</small>""".format(
+            img_to_bytes("./images/github.png")
+        ),
+        unsafe_allow_html=True,
+    )
