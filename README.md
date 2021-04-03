@@ -1,4 +1,4 @@
-## Playground
+# Playground
 
 Playground is a **streamlit** application that allows you to tinker with machine learning models from your browser.
 
@@ -6,11 +6,11 @@ _This app is inspired by the great Tensorflow [playground](https://playground.te
 
 ![](./images/playground.png)
 
-### Demo
+## Demo
 
 Right [here](https://playground-ml.herokuapp.com/)
 
-### How does it work ?
+## How does it work ?
 
 1. 🗂️ You pick and configure a **dataset** from a pre-defined list. You can set:
    - the number of samples
@@ -25,11 +25,11 @@ Right [here](https://playground-ml.herokuapp.com/)
 
 **Bonus point**: the app also provides the ability to perform feature engineering by adding polynomial features. This proves to be helpful for linear models such as logistic regressions on non-linear problems.
 
-### What can you learn from playground?
+## What can you learn from playground?
 
 If you're new to machine learning, playing with this app will probably (and hopefully :)) get you familiar with basic notions and help you build your first intuitions. It won't replace text books: it's only meant to complement your knowledge. Take it as it is.
 
-#### 1. Decision boundaries will (partially) tell you how models behave
+### 1. Decision boundaries will (partially) tell you how models behave
 
 You'll get more sense of how each model works by inspecting its decision boundary. For educational purposes, playground will process datasets that have 2 feautres (but same results can be obtained multi-dimensional datasets after dimensionality reduction)
 
@@ -45,7 +45,7 @@ Interestingly, a random forest, which is a bagging of multiple decision trees, h
 
 ![](./images/random_forest.png)
 
-#### 2. You'll get a sense of the speed of each model
+### 2. You'll get a sense of the speed of each model
 
 Given the same dataset, you can compare the speed of each model and get a feeling of who's faster. In the previous plots, the logistic regression and the decision tree respectively took **0.004** and **0.001** seconds to train whereas the random foest took **0.154 seconds**.
 
@@ -53,7 +53,7 @@ Try a Neural Network with 4 stacked layers of 100 neurons each: it takes **0.253
 
 ![](./images/neural_network.png)
 
-#### 3. Feature engineering can help
+### 3. Feature engineering can help
 
 Using a logistic regression on the moon dataset won't get you a good score given its non-linear nature.
 
@@ -61,17 +61,17 @@ However, increasing the dimensionality by adding polynomial features can help: t
 
 ![](./images/neural_network.png)
 
-#### 4. Some models are more robust than others to noise
+### 4. Some models are more robust than others to noise
 
 You can experiment by setting a higher noise on the test data, thus making it drift from the train distribution. Some models such as Gradient Boosting are more stable than others against this problem.
 
-#### 5. Try out different combinations of hyper-parameters
+### 5. Try out different combinations of hyper-parameters
 
 A great way to learn and validate your intuitions is to experiment, and that's what this app is for: it'll allow you to tinker with a bunch of hyper-parameters (tree depth, number of estimators, number of layers etc...) and immediately see the results on the decision boundaries, the metrics as well as the execution time.
 
 Go, and give it a try, and I hope you'll learn something from it!
 
-### Run the app locally
+## Run the app locally
 
 Make sure you have pip installed with Python 3.
 
@@ -93,4 +93,4 @@ pipenv install
 streamlit run app.py
 ```
 
-#### Structure of the code
+## Structure of the code
