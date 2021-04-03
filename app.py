@@ -119,7 +119,7 @@ tips.info(model_info)
 
 
 fig = plot_decision_boundary_and_metrics(
-    model, model_type, x_train, y_train, x_test, y_test, metrics
+    model, x_train, y_train, x_test, y_test, metrics
 )
 
 plot_placeholder.plotly_chart(fig, True)
