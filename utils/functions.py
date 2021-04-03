@@ -47,7 +47,7 @@ def plot_data(x, y, dataset):
 
 
 def plot_decision_boundary_and_metrics(
-    model, model_type, x_train, y_train, x_test, y_test, metrics
+    model, x_train, y_train, x_test, y_test, metrics
 ):
     d = x_train.shape[1]
 
@@ -115,9 +115,11 @@ def plot_decision_boundary_and_metrics(
         ),
     )
 
-    fig.add_trace(heatmap, row=1, col=1,).add_trace(
-        train_data
-    ).add_trace(test_data)
+    fig.add_trace(heatmap, row=1, col=1,).add_trace(train_data).add_trace(
+        test_data
+    ).update_xaxes(range=[x_min, x_max], title="x1").update_yaxes(
+        range=[y_min, y_max], title="x2"
+    )
 
     fig.add_trace(
         go.Indicator(
