@@ -7,6 +7,7 @@ _This app is inspired by the great Tensorflow [playground](https://playground.te
 <p align="center">
    <img src="./images/demo.gif">
 </p>
+
 ## Demo
 
 Right [here](https://playground-ml.herokuapp.com/)
