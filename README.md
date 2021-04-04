@@ -96,3 +96,13 @@ streamlit run app.py
 ```
 
 ## Structure of the code
+
+- `app.py` : The main script to start the app
+- `utils/`
+  - `ui.py`: UI functions to display the different components of the app
+  - `functions.py`: for data processing, training the model and building the plotly graphs
+- `models/`: where each model's hyper-parameter selector is defined
+
+## Contributions are welcome!
+
+- Feel free to open a pull request or an issue if you're thinking of feature you'd like to see in the app: be it a new type of model or a new dataset.
