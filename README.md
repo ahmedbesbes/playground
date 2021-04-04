@@ -1,6 +1,8 @@
 # Playground 🧪
 
-Playground is a **streamlit** application that allows you to tinker with machine learning models from your browser: if you're a machine learning practitioner you should definitely try it out :wink:
+Playground is a **streamlit** application that allows you to tinker with machine learning models from your browser.
+
+So if you're a data science practitioner you should definitely try it out :wink:
 
 _This app is inspired by the great Tensorflow [playground](https://playground.tensorflow.org/). The only difference here is that it addresses classical machine learning models_
 
@@ -29,7 +31,7 @@ Right [here](https://playground-ml.herokuapp.com/)
 
 ## What can you learn from playground?
 
-If you're new to machine learning, playing with this app will probably (and hopefully :)) get you familiar with basic notions and help you build your first intuitions. It won't replace text books: it's only meant to complement your knowledge. Take it as it is.
+If you're new to machine learning, playing with this app will probably (and hopefully :smile:) get you familiar with basic notions and help you build your first intuitions. It won't replace text books: it's only meant to complement your knowledge. Take it as it is.
 
 ### 1. Decision boundaries will (partially) tell you how models behave
 
