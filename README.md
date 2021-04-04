@@ -4,7 +4,7 @@ Playground is a **streamlit** application that allows you to tinker with machine
 
 _This app is inspired by the great Tensorflow [playground](https://playground.tensorflow.org/). The only difference here is that it addresses classical machine learning models_
 
-![](./images/playground.png)
+![](./images/demo.gif)
 
 ## Demo
 
