@@ -1,6 +1,6 @@
 # Playground 🧪
 
-Playground is a **streamlit** application that allows you to tinker with machine learning models from your browser.
+Playground is a **streamlit** application that allows you to tinker with machine learning models from your browser: if you're a machine learning practitioner you should definitely try it out ;)
 
 _This app is inspired by the great Tensorflow [playground](https://playground.tensorflow.org/). The only difference here is that it addresses classical machine learning models_
 
