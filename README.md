@@ -1,4 +1,4 @@
-# Playground
+# Playground 🧪
 
 Playground is a **streamlit** application that allows you to tinker with machine learning models from your browser.
 
