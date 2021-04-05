@@ -18,7 +18,9 @@ from utils.ui import (
     model_selector,
 )
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="Playground", layout="wide", page_icon="./images/flask.png"
+)
 
 
 def sidebar_controllers():
