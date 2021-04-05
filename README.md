@@ -1,3 +1,5 @@
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/ahmedbesbes/playground/main/app.py)
+
 # Playground 🧪
 
 Playground is a **streamlit** application that allows you to tinker with machine learning models from your browser.
