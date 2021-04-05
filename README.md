@@ -35,7 +35,7 @@ If you're new to machine learning, playing with this app will probably (and hope
 
 ### 1. Decision boundaries will (partially) tell you how models behave
 
-You'll get more sense of how each model works by inspecting its decision boundary. For educational purposes, playground will process datasets that have 2 feautres (but same results can be obtained multi-dimensional datasets after dimensionality reduction)
+You'll get more sense of how each model works by inspecting its decision boundary. For educational purposes, playground will process datasets that have 2 features (but same results can be obtained on multi-dimensional datasets after dimensionality reduction)
 
 You'll see for example that a logistic regression separates the data by a line (or a hyperplane in the general case)
 
@@ -107,4 +107,14 @@ streamlit run app.py
 
 ## Contributions are welcome!
 
-- Feel free to open a pull request or an issue if you're thinking of feature you'd like to see in the app: be it a new type of model or a new dataset.
+Feel free to open a pull request or an issue if you're thinking of a feature you'd like to see in the app.
+
+Off the top of my head, I can think of:
+
+- [ ] Adding other non-linear datasets
+- [ ] Adding more models
+- [ ] Implementing sophisticated feature engineering (sinusoidal features for instance)
+- [ ] Implementing a custom dataset reader with dimensionality reduction
+- [ ] Adding feature importance plots
+
+But if you've got other ideas, I will be happy to discuss them with you.
