@@ -1,6 +1,6 @@
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/ahmedbesbes/playground/main/app.py)
 
-*Check my video tutorial to learn how to build this app *
+*Check my video tutorial to learn how to build this app*
 
 [![End to end tutorial to Build and Deploy a Streamlit Application on Heroku](https://res.cloudinary.com/marcomontalbano/image/upload/v1618477960/video_to_markdown/images/youtube--htKmCWrFYr8-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/htKmCWrFYr8 "End to end tutorial to Build and Deploy a Streamlit Application on Heroku")
 
