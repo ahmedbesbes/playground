@@ -7,6 +7,7 @@ model_imports = {
     "K Nearest Neighbors": "from sklearn.neighbors import KNeighborsClassifier",
     "Gaussian Naive Bayes": "from sklearn.naive_bayes import GaussianNB",
     "SVC": "from sklearn.svm import SVC",
+    "Perceptron": "from sklearn.linear_model import Perceptron",
 }
 
 
@@ -19,6 +20,7 @@ model_urls = {
     "K Nearest Neighbors": "https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html",
     "Gaussian Naive Bayes": "https://scikit-learn.org/stable/modules/naive_bayes.html",
     "SVC": "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html",
+    "Perceptron": "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Perceptron.html",
 }
 
 
@@ -62,5 +64,11 @@ model_infos = {
         - SVMs or SVCs are effective when the number of features is larger than the number of samples
         - They provide different type of kernel functions
         - They require careful normalization   
+    """,
+    "Perceptron": """
+        - Perceptron is the simples form of Artificial Neural Network
+        - Single-layer Perceptrons require linearly separable data, otherwise it does not converge
+        - Multilayer Perceptrons (MLP) are feedforward neural networks with two or more layers which have the greater 
+        processing power and can process non-linearly separable data. 
     """,
 }

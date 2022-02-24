@@ -10,6 +10,7 @@ from models.LogisticRegression import lr_param_selector
 from models.KNearesNeighbors import knn_param_selector
 from models.SVC import svc_param_selector
 from models.GradientBoosting import gb_param_selector
+from models.Perceptron import lp_param_selector
 
 from models.utils import model_imports
 from utils.functions import img_to_bytes
@@ -83,6 +84,7 @@ def model_selector():
                 "K Nearest Neighbors",
                 "Gaussian Naive Bayes",
                 "SVC",
+                "Perceptron",
             ),
         )
 
@@ -109,6 +111,9 @@ def model_selector():
 
         elif model_type == "Gradient Boosting":
             model = gb_param_selector()
+
+        elif model_type == "Perceptron":
+            model = lp_param_selector()
 
     return model_type, model
 
